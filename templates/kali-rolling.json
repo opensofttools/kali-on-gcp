@@ -1,16 +1,15 @@
 {
 	"_comment0": "replace `project_id` and `bucket` in the `googlecompute-import` post-processor to point to a writeable directory within your project. A compressed version of the ",
 	"variables": {
-		"iso_url": "https://cdimage.kali.org/kali-2021.2/kali-linux-2021.2-live-amd64.iso",
+		"iso_url": "file:///home/ubuntu/kali-on-gcp/kali-linux-2024.3-live-amd64.iso",
 		"iso_checksum_type": "sha256",
-		"iso_checksum": "a6e11071179f5c3a8c5195123b505f0d991a5c845d22bcba0f4355be69c6d9e8",
-		"public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDSTmN2oPZWOro5WhEdNKRFJNOAR01be4leEHnN38WYz8LVtyIt15iKRrChJZEZ4UhvsX2F91W/K7iYRGmu0tFhIUQceT/6bDT+gQ/I5oXUDaV3kNK5J+4fZpKe5bMg8wRNmKHz/nIzGFabQqyv01O7wyaNs2JWl/nUAnhWiEUYs5LCc+E/WWKvFNVbriDKA8z0cougxSj20yNK43ZXOGbA31cUw4QxuiOC3xe8MUrr1B58mZYbtbRckKtVmY3SLrONF97R8+E/XcA0/nGH28xp3WfvL99yHlclnwu/NwU+80N9v7PaJjhxjlSv5O4tu32drvAxAjyqfnXvIAU95g3Z deargle@wherever"
+		"iso_checksum": "7c5c3dc8cb98534974355ab6d09e7df95a171089c738edd5a19dcc7196873de9",
+		"public_key": "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF6Av2BUxxZb1EMouptNMZhee6ENDqBVMQrZxXeyubD3 root@perf-node"
 	},
 	"builders": [{
 		"type": "qemu",
 		"iso_url": "{{user `iso_url`}}",
-		"iso_checksum_type": "{{user `iso_checksum_type`}}",
-		"iso_checksum": "{{user `iso_checksum`}}",
+		"iso_checksum": "{{user `iso_checksum_type`}}:{{user `iso_checksum`}}",
 		"headless": false,
 		"http_directory": "{{template_dir}}/../http",
 		"http_port_min": 9001,
@@ -29,7 +28,7 @@
 		],
 		"communicator": "ssh",
 		"ssh_username": "root",
-		"ssh_password": "toor",
+		"ssh_password": "admin001A",
 		"ssh_wait_timeout": "2h",
 		"accelerator": "kvm",
 		"shutdown_command": "echo 'packer' | sudo -S shutdown -P now",
@@ -41,8 +40,8 @@
 		"disk_interface": "virtio",
 		"output_directory": "output",
 		"qemuargs": [
-	 		["-m", "4096"],
-			["-smp", "2"],
+	 		["-m", "16384"],
+			["-smp", "8"],
 			["-display", "gtk"]
 		]
 	}],
@@ -62,21 +61,5 @@
 			"type": "shell",
 			"script": "{{template_dir}}/../scripts/grub-stuff.sh"
 		}
-	],
-	"post-processors": [
-		[
-			{
-				"type": "compress",
-				"output": "output/disk.raw.tar.gz"
-			},
-			{
-				"type": "googlecompute-import",
-				"account_file": "{{template_dir}}/../account.json",
-				"project_id": "REPLACE_ME",
-				"bucket": "REPLACE_ME",
-				"image_name": "kali-rolling-{{timestamp}}",
-				"image_family": "kali-rolling-gcpized"
-			}
-		]
 	]
 }

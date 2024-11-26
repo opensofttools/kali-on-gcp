@@ -3,3 +3,5 @@ packer_cache/
 account.json
 */**/.vagrant
 */**/id_rsa
+*.iso
+output/*
